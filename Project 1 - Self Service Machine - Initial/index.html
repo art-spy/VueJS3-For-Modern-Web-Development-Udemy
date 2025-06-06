@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Self Service Order</title>
+</head>
+
+<body>
+
+<!--  everything inside the data element has access to the date object -->
+<main id="app">
+
+    <!-- v-if, v-for etc. are 'directives',
+     with directives you can use logic within a HTML-file -->
+    <section v-if="true" class="items">
+
+        <h4>{{message}}</h4>
+        <h4>Pick your items</h4>
+
+        <!-- @click ist das gleiche wie v-on:click.
+        v-if:class ist das gleiche wie :class (?)
+        Altvernative für  :class="product.active ? 'selected' : '' " ist { selected : product.active } -->
+        <div
+                v-for="product in products"
+                class="product"
+                v-on:click="product.active = !product.active"
+                :class="{ selected : product.active }"
+        >
+            <div class="photo">
+                <!-- wenn VueJS innerhalbt von Tag-Attributen genutzt werden,
+                 ist die Synax anders > Doppelpunt vor dem HTML-Tag.
+                 Alternative für :src ist v-bind:src -->
+                <img :src="product.photo">
+            </div>
+            <div class="description">
+                <span class="name">{{product.name}}</span>
+                <span class="price">{{product.price}}</span>
+                <div class="quantity-area" v-if="product.active">
+                    <!-- durch .stop wird der click event handler nur auf das button-Element angewendet,
+                    und nicht zusätzlich auf das Eltern-Element-->
+                    <button @click.stop="product.quantity--"
+                            :disabled="product.quantity <= 1">-
+                    </button>
+                    <span class="quantity">{{product.quantity}}</span>
+                    <button @click.stop="product.quantity++">+</button>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="summary" v-if="total() > 0">
+        <strong>Order Details</strong>
+        <table>
+            <thead>
+            <tr>
+                <th>Item</th>
+                <th>Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="product in products">
+                <template v-if="product.active">
+                    <td>{{ product.quantity + 'x ' + product.name }}</td>
+                    <td>{{ (product.quantity * product.price).toFixed(2) }}</td>
+                </template>
+            </tr>
+            <tr>
+                <th>Total</th>
+                <th>{{ total() }}</th>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+</main>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="scripts.js"></script>
+</body>
+
+</html>
